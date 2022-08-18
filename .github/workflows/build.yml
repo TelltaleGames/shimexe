@@ -1,0 +1,22 @@
+name: build
+
+on:
+  push:
+    branches: [master]
+
+jobs:
+  build:
+    runs-on: windows-2022
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Build
+        shell: powershell
+        run: .\build.ps1
+
+      - name: Upload
+        uses: actions/upload-artifact@v2
+        with:
+          name: shimexe
+          path: shim.exe
