@@ -14,6 +14,9 @@ $vshostarch = "x64"
 
 $source = @("shim.c")
 
+Push-Location
+cd $PSScriptRoot
+
 if(![string]::IsNullOrEmpty($Icon)) {
 
     $IconPath = (Get-Item $Icon).FullName -replace "\\", "\\"
@@ -34,3 +37,4 @@ MAINICON ICON "$IconPath"
 }
 
 cl /O1 @source
+Pop-Location
