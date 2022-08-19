@@ -1,3 +1,6 @@
+Param(
+    [string]$Icon
+)
 $VSWhere = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe"
 $vspath = & $VSWhere -prerelease -latest -property installationPath -products *
 $vsdevcmd = "$vspath\Common7\Tools\vsdevcmd.bat"
@@ -9,4 +12,25 @@ $vshostarch = "x64"
     set-content env:\"$name" $value
 }
 
-cl /O1 shim.c
+$source = @("shim.c")
+
+if(![string]::IsNullOrEmpty($Icon)) {
+
+    $IconPath = (Get-Item $Icon).FullName -replace "\\", "\\"
+
+    $res = @"
+#ifndef _resource_rc
+#define _resource_rc
+
+MAINICON ICON "$IconPath"
+
+#endif // _resource_rc
+"@
+
+    [System.IO.File]::WriteAllLines((Join-Path $PSScriptRoot "resource.rc"), $res);
+
+    rc.exe resource.rc
+    $source += @("resource.res")
+}
+
+cl /O1 @source
